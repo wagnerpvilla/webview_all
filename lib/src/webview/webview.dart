@@ -8,21 +8,29 @@ import 'webview_desktop.dart'
     if (dart.library.html) "webview_desktop_vain.dart";
 
 class Webview extends StatelessWidget {
-  final String url;
-
-  const Webview({super.key, required this.url});
+  final String? url;
+  final String? html;
+  const Webview({
+    super.key,
+    this.url,
+    this.html,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (isMobile()) {
       return WebviewMobile(
-          url: url,
-          backgroundColor: const Color(0x00000000),
-          javaScriptMode: JavaScriptMode.unrestricted);
+        url: url ?? '',
+        backgroundColor: const Color(0x00000000),
+        javaScriptMode: JavaScriptMode.unrestricted,
+      );
     } else if (isWeb()) {
-      return WebviewWeb(url: url);
+      return WebviewWeb(
+        url: url,
+        html: html,
+      );
     } else if (isDesktop()) {
-      return WebviewDesktop(url: url);
+      return WebviewDesktop(url: url ?? '');
     } else {
       return const SizedBox.expand();
     }

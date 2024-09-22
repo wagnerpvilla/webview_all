@@ -5,18 +5,21 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:webview_flutter_web/webview_flutter_web.dart';
 
 class WebviewWeb extends StatefulWidget {
-  final String url;
+  final String? url;
+  final String? html;
 
-  const WebviewWeb({Key? key, required this.url}) : super(key: key);
+  const WebviewWeb({
+    Key? key,
+    this.url,
+    this.html,
+  }) : super(key: key);
 
   @override
-  State<WebviewWeb> createState() => _WebviewWebState(url: url);
+  State<WebviewWeb> createState() => _WebviewWebState();
 }
 
 class _WebviewWebState extends State<WebviewWeb> {
-  late String url;
-
-  _WebviewWebState({required this.url});
+  _WebviewWebState();
 
   @override
   void initState() {
@@ -26,13 +29,28 @@ class _WebviewWebState extends State<WebviewWeb> {
 
   @override
   Widget build(BuildContext context) {
+    assert(() {
+      if (widget.url == null && widget.html == null) {
+        throw FlutterError('Either url or html must be provided');
+      }
+
+      return true;
+    }());
+
     final PlatformWebViewController controller = PlatformWebViewController(
       const PlatformWebViewControllerCreationParams(),
-    )..loadRequest(
+    );
+
+    if (widget.url != null) {
+      controller.loadRequest(
         LoadRequestParams(
-          uri: Uri.parse(url),
+          uri: Uri.parse(widget.url!),
         ),
       );
+    } else if (widget.html != null) {
+      controller.loadHtmlString(widget.html!);
+    }
+
     return PlatformWebViewWidget(
       PlatformWebViewWidgetCreationParams(controller: controller),
     ).build(context);
